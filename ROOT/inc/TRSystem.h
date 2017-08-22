@@ -28,6 +28,10 @@
 #include<TApplication.h>
 #endif
 
+#include<TROOT.h>
+#include<TGlobal.h>
+#include<RCppyy.h>
+
 //________________________________________________________________________________________________________
 /**
    This is a gSystem wrap for R
@@ -48,9 +52,12 @@ namespace ROOT {
          }
          void ProcessEventsLoop();
          Int_t   Load(TString module);
+         void AddIncludePath(TString path);
+         ptrdiff_t GetObject(TString name);
       };
    }
 }
+
 
 ROOTR_EXPOSED_CLASS_INTERNAL(TRSystem)
 
@@ -83,6 +90,20 @@ Int_t ROOT::R::TRSystem::Load(TString module)
    return gSystem->Load(module.Data());
 }
 
+//______________________________________________________________________________
+void ROOT::R::TRSystem::AddIncludePath(TString path)
+{
+    gSystem->AddIncludePath(path.Data());
+}
+
+//______________________________________________________________________________
+ ptrdiff_t ROOT::R::TRSystem::GetObject(TString name)
+{
+    auto collection=gROOT->GetListOfGlobals();
+    auto obj=(TGlobal*)collection->FindObject(name.Data());
+    return ( ptrdiff_t)obj->GetAddress ();
+}
+
 ROOTR_MODULE(ROOTR_TRSystem)
 {
 
@@ -90,6 +111,8 @@ ROOTR_MODULE(ROOTR_TRSystem)
    .constructor()
    .method("ProcessEventsLoop", &ROOT::R::TRSystem::ProcessEventsLoop)
    .method("Load", (Int_t(ROOT::R::TRSystem::*)(TString))&ROOT::R::TRSystem::Load)
+   .method("AddIncludePath", (void(ROOT::R::TRSystem::*)(TString))&ROOT::R::TRSystem::AddIncludePath)
+   .method("GetObject", ( ptrdiff_t(ROOT::R::TRSystem::*)(TString))&ROOT::R::TRSystem::GetObject)
    ;
 }
 

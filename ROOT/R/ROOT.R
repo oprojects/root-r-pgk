@@ -6,6 +6,7 @@
 # * For the list of contributors see $ROOTSYS/README/CREDITS.             *
 # *************************************************************************/
 require( Rcpp )
+require( RInside )
 .onLoad <- function(libname, pkgname)
 {
 require("methods") 
@@ -86,10 +87,17 @@ LoadModule("Core")
 
 #creating global variables
 gApplication <- new(TRint,'ROOTR')
-assign("gApplication", gApplication, envir = .GlobalEnv)
 
 gSystem      <- new(TSystem)
+gSystem$AddIncludePath(Rcpp:::RcppCxxFlags())
+gSystem$AddIncludePath(RInside:::RInsideCxxFlags())
 assign("gSystem", gSystem, envir = .GlobalEnv)
+
+gApplication$ProcessLine("#include<TRInterface.h>")
+gApplication$ProcessLine("#include<TRPtr.h>")
+gApplication$ProcessLine("#include<TRObject.h>")
+gApplication$ProcessLine("#include<RExports.h>")
+assign("gApplication", gApplication, envir = .GlobalEnv)
 
 #starting Gui eventloop
 gSystem$ProcessEventsLoop()

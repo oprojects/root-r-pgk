@@ -28,7 +28,7 @@ RINSIDEINCL=`$(R_HOME)/bin/Rscript -e 'RInside:::CxxFlags()'`
 ##################
 RCPPLIBS=`$(R_HOME)/bin/Rscript -e 'Rcpp:::LdFlags()'`
 RINSIDELIBS=`$(R_HOME)/bin/Rscript -e  'RInside:::LdFlags()'`
-ROOTLIBS=`root-config --glibs` 
+ROOTLIBS=`root-config --glibs` -lRInterface
 
 ALLCXXFLAGS = $(ROOTFLAGS) $(RFLAGS) $(RCPPINCL) $(RINSIDEINCL)
 
@@ -43,7 +43,7 @@ ALLLIBS: $(CORELIB) $(HISTLIB) $(RINTLIB) $(GRAFLIB) $(RIOLIB)
 		cp $(RIOLIB)  $(INSTDIR)$(R_ARCH)
 
 $(CORELIB):
-		$(SHLIB_CXXLD) $(ALLCXXFLAGS)  TCallContext.cxx Cppyy.cxx  Core.cxx -o  $(CORELIB)   $(ALL_LIBS) $(ALLLDFLAGS)
+		$(SHLIB_CXXLD) $(ALLCXXFLAGS)  Core.cxx -o  $(CORELIB)   $(ALL_LIBS) $(ALLLDFLAGS)
 
 $(RINTLIB):
 		$(SHLIB_CXXLD) $(ALLCXXFLAGS) Rint.cxx -o  $(RINTLIB)   $(ALL_LIBS) $(ALLLDFLAGS)
